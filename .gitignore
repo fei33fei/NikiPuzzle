@@ -1,0 +1,9 @@
+node_modules/
+tests/fixtures/
+test-output/
+*.log
+.update-tmp/
+.update-backup/
+STATUS.md
+preview.jpg
+preview-v2.jpg
