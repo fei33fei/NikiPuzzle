@@ -1,6 +1,6 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {defaultSettings,cleanSettings,allLayouts,cells,dimensions,validateDimensions,cropRect,crc32,zipStore,LAYOUTS,stitchSettings,pageRatio,makeSlot,swapSlots} from '../core.mjs';
+import {defaultSettings,cleanSettings,allLayouts,cells,dimensions,validateDimensions,cropRect,crc32,zipStore,LAYOUTS,stitchSettings,pageRatio,makeSlot,swapSlots,clearSlots} from '../core.mjs';
 
 test('there are 36 selectable layouts with 12 in each category',()=>{assert.equal(allLayouts.length,36);assert.equal(new Set(allLayouts).size,36);for(const list of Object.values(LAYOUTS))assert.equal(list.length,12);});
 function inside(b,x,y){const X=(x-b.x)/b.w,Y=(y-b.y)/b.h;if(b.shape==='rect')return X>=0&&X<=1&&Y>=0&&Y<=1;if(b.shape!=='polygon')return false;let hit=false;for(let i=0,j=b.points.length-1;i<b.points.length;j=i++){const a=b.points[i],c=b.points[j];if((a[1]>Y)!==(c[1]>Y)&&X<(c[0]-a[0])*(Y-a[1])/(c[1]-a[1])+a[0])hit=!hit;}return hit;}
@@ -24,6 +24,16 @@ test('dragging a photo between collage cells swaps filled cells and leaves the s
  assert.deepEqual(swapSlots(slots,1,1).map(s=>s.id),['a','b',null]);
  assert.deepEqual(swapSlots(slots,0,9).map(s=>s.id),['a','b',null]);
  assert.deepEqual(slots.map(s=>s.id),['a','b',null]);
+});
+test('clearing photos empties every slot but keeps layouts, counts and page order',()=>{
+ const pages=[{id:'p1',settings:{...defaultSettings(),layout:'hero-left',count:3},slots:[makeSlot('a'),makeSlot('b'),makeSlot()]},{id:'p2',settings:{...defaultSettings(),layout:'grid',count:2},slots:[makeSlot('c'),makeSlot('d')]}];
+ const cleared=clearSlots(pages);
+ assert.deepEqual(cleared.map(p=>p.slots.map(s=>s.id)),[[null,null,null],[null,null]]);
+ assert.deepEqual(cleared.map(p=>p.settings.layout),['hero-left','grid']);
+ assert.deepEqual(cleared.map(p=>p.settings.count),[3,2]);
+ assert.deepEqual(cleared.map(p=>p.id),['p1','p2']);
+ assert.deepEqual(cleared[0].slots[0],makeSlot());
+ assert.equal(pages[0].slots[0].id,'a');
 });
 test('classic grid divides evenly into two columns and never repeats the square-rhythm layout',()=>{
  const geometry=(layout,count)=>{const [w,h]=dimensions([3,4],4800);const boxes=cells({...defaultSettings(),layout,count,margin:0,gap:0,radius:0},w,h);return {cols:new Set(boxes.map(b=>Math.round(b.x))).size,rows:new Set(boxes.map(b=>Math.round(b.y))).size,boxes:boxes.length};};

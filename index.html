@@ -18,6 +18,9 @@
   <div class="section-heading"><span class="step">03</span><h2>我的模板</h2><button id="saveTemplate" class="text-button">＋ 保存</button></div>
   <div id="templates" class="templates"></div>
   <div class="template-actions"><button id="importTemplate" class="quiet">↓ 导入模板</button><button id="exportTemplate" class="quiet">↑ 导出模板</button></div>
+  <div class="divider"></div>
+  <div class="section-heading"><span class="step">04</span><h2>纵横长拼</h2></div>
+  <div class="stitch-panel"><strong>全部照片 · 直接长拼</strong><div><button id="stitchVertical" class="secondary">↓ 纵向拼贴</button><button id="stitchHorizontal" class="secondary">→ 横向拼贴</button></div><p>按素材顺序，保留照片完整比例。<br>纵向统一宽度，横向统一高度。</p><button id="refreshStitch" class="text-button" hidden>用全部素材更新当前长拼</button></div>
 </aside>
 <section class="studio">
   <div class="studio-toolbar"><div><span class="live-dot"></span><strong id="pageTitle">拼图 01</strong><span id="canvasInfo" class="muted"></span></div><div class="toolbar-actions"><button id="undo" title="撤销 Ctrl+Z" class="quiet">↶ 撤销</button><button id="redo" title="重做 Ctrl+Shift+Z" class="quiet">↷ 重做</button><button id="resetCrop" class="quiet">重置构图</button></div></div>
@@ -26,12 +29,11 @@
   <div class="filmstrip"><div class="film-heading"><span>作品集 <b id="pageCount">1</b></span><button id="newPage" class="text-button">＋ 新建拼图</button></div><div id="pages" class="pages"></div></div>
 </section>
 <aside class="sidebar right">
-  <div class="section-heading"><h2>照片素材</h2><span id="assetCount" class="eyebrow">0 张</span></div>
+  <div class="section-heading"><h2>照片素材</h2><span id="assetCount" class="eyebrow">0 张</span><button id="clearAssets" class="text-button">清空</button></div>
   <button id="addPhotos" class="upload-zone"><span>＋</span><strong>导入照片</strong><small>从任意位置选择 · 支持多选</small></button>
   <div id="assets" class="assets"></div>
   <div id="assetEmpty" class="asset-empty">一张风景，一次相聚。<br>让值得珍藏的画面，在这里相遇。</div>
   <div class="photo-actions"><button id="fillPage" class="quiet">填满当前拼图</button><button id="batchPages" class="quiet">按布局批量生成</button></div>
-  <div class="stitch-panel"><strong>全部照片 · 直接长拼</strong><div><button id="stitchVertical" class="secondary">↓ 纵向拼贴</button><button id="stitchHorizontal" class="secondary">→ 横向拼贴</button></div><p>按素材顺序，保留照片完整比例。<br>纵向统一宽度，横向统一高度。</p><button id="refreshStitch" class="text-button" hidden>用全部素材更新当前长拼</button></div>
   <div class="divider"></div>
   <div class="section-heading"><h2>留白与边框</h2></div>
   <label class="range-label">外边距 <output id="marginValue"></output><input id="margin" type="range" min="0" max="12" step="0.1"></label>
@@ -42,12 +44,12 @@
   <div class="section-heading"><h2>照片构图</h2><span class="eyebrow" id="slotLabel">第 1 格</span></div>
   <label class="range-label">照片缩放 <output id="zoomValue"></output><input id="zoom" type="range" min="1" max="5" step="0.01" value="1"></label>
   <div class="crop-actions"><button id="fitPhoto" class="quiet">完整显示</button><button id="coverPhoto" class="quiet">铺满格子</button><button id="clearSlot" class="quiet">移除</button></div>
-  <div class="export-card"><div><strong>高清，无损，属于你。</strong><p>PNG 无损导出 · 自定义分辨率</p></div><button id="exportSide" class="primary">导出作品 <span>↗</span></button></div>
 </aside>
 </main>
 <footer><span class="footer-left"><button id="openSettings" class="footer-button">设置</button><span>NikiPuzzle / 只做拼图，刚刚好。</span></span><span>本机处理 · 照片不上传 · 仅检查更新时联网</span></footer>
 <dialog id="exportDialog"><form method="dialog"><div class="dialog-heading"><div><span class="eyebrow">EXPORT YOUR MOMENTS</span><h2>把美好，清晰保存。</h2></div><button class="close" aria-label="关闭">×</button></div><p class="muted">PNG 无损保存，不做有损压缩。文件大小取决于像素与照片内容。</p><label class="field">导出像素<select id="exportSize"><option value="2400">2400 px · 日常分享</option><option value="4800" selected>4800 px · 高清珍藏</option><option value="8000">8000 px · 超清大图</option><option value="short1200">短边 1200 px · 清晰长拼</option><option value="short2400">短边 2400 px · 超清长拼</option><option value="custom">自定义像素</option></select></label><div id="customSizeRow" class="custom-size" hidden><label>宽 <input id="exportWidth" type="number" min="1" max="30000"></label><span>×</span><label>高 <input id="exportHeight" type="number" min="1" max="30000"></label><small>依画布比例自动联动</small></div><p id="exportDimensions" class="dimension-note"></p><label class="field">导出范围<select id="exportScope"><option value="current">当前拼图</option><option value="all">全部拼图</option></select></label><label class="field">文件名前缀<input id="exportName" value="NikiPuzzle" maxlength="80"></label><div class="folder-row"><button type="button" id="chooseFolder" class="secondary">选择保存文件夹</button><span id="folderName">未选择 · 使用保存对话框</span></div><p class="small-note">支持 Edge / Chrome 的文件夹选择。其他浏览器批量导出为 ZIP，可在下载时选择位置。</p><button type="button" id="doExport" class="primary wide">保存 PNG 原画质</button><p id="exportProgress" aria-live="polite"></p></form></dialog>
 <dialog id="nameDialog"><form method="dialog"><div class="dialog-heading"><h2>保存为模板</h2><button class="close" aria-label="关闭">×</button></div><p class="muted">保存比例、布局、留白和底色，下次一键套用。</p><input id="templateName" placeholder="给模板起个名字" maxlength="40" required><button id="confirmTemplate" type="button" class="primary wide">保存模板</button></form></dialog>
+<dialog id="clearDialog"><form method="dialog"><div class="dialog-heading"><div><span class="eyebrow">CLEAR PHOTOS</span><h2>清空全部照片？</h2></div><button class="close" aria-label="关闭">×</button></div><p class="muted" id="clearHint"></p><p class="small-note">素材库和所有拼图里的照片都会被移除，拼图数量与布局保持不变。此操作可以用 Ctrl+Z 撤销恢复。</p><button type="button" id="confirmClear" class="primary wide">确认清空</button></form></dialog>
 <dialog id="settingsDialog"><div class="dialog-heading"><div><span class="eyebrow">SETTINGS</span><h2>设置</h2></div><button id="closeSettings" class="close" aria-label="关闭">×</button></div><div class="settings-block"><div class="settings-row"><span>当前版本</span><b id="currentVersion">读取中…</b></div><div class="settings-row"><span>更新状态</span><b id="updateStatus">尚未检查</b></div><p class="small-note" id="updateNote">仅在点击“检查更新”时连接 GitHub，照片始终留在本机。</p><div class="settings-actions"><button id="checkUpdate" class="secondary">检查更新</button><button id="installUpdate" class="primary" disabled>下载并安装</button></div><p class="small-note" id="updateProgress"></p></div><div class="divider"></div><div class="settings-row"><span>项目仓库</span><a id="repoLink" class="repo-link" href="https://github.com/fei33fei/NikiPuzzle" target="_blank" rel="noreferrer noopener">github.com/fei33fei/NikiPuzzle</a></div><button id="reloadApp" class="secondary wide">重新载入界面</button></dialog>
 <div id="toast" class="toast" role="status"></div><input id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/gif,image/bmp" multiple hidden><input id="jsonInput" type="file" accept=".json,.nikipuzzle,application/json" hidden>
 <script type="module" src="/app.js"></script></body></html>
