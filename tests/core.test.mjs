@@ -25,3 +25,11 @@ test('dragging a photo between collage cells swaps filled cells and leaves the s
  assert.deepEqual(swapSlots(slots,0,9).map(s=>s.id),['a','b',null]);
  assert.deepEqual(slots.map(s=>s.id),['a','b',null]);
 });
+test('classic grid divides evenly into two columns and never repeats the square-rhythm layout',()=>{
+ const geometry=(layout,count)=>{const [w,h]=dimensions([3,4],4800);const boxes=cells({...defaultSettings(),layout,count,margin:0,gap:0,radius:0},w,h);return {cols:new Set(boxes.map(b=>Math.round(b.x))).size,rows:new Set(boxes.map(b=>Math.round(b.y))).size,boxes:boxes.length};};
+ assert.deepEqual(geometry('grid',6),{cols:2,rows:3,boxes:6});
+ assert.deepEqual(geometry('balanced',6),{cols:3,rows:2,boxes:6});
+ assert.deepEqual(geometry('grid',4),{cols:2,rows:2,boxes:4});
+ assert.deepEqual(geometry('grid',12),{cols:3,rows:4,boxes:12});
+ assert.deepEqual(geometry('grid',1),{cols:1,rows:1,boxes:1});
+});

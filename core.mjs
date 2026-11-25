@@ -33,7 +33,7 @@ export function cells(s,w,h){
  else if(l==='alternating'||l==='two-bands'){let rows=l==='two-bands'?2:Math.max(2,Math.round(Math.sqrt(n)));rows=Math.min(rows,n);let remaining=n,y=0;for(let r=0;r<rows;r++){const count=Math.ceil(remaining/(rows-r)),height=r===rows-1?1-y:1/rows;const weights=Array.from({length:count},(_,i)=>l==='alternating'?(i===0?(r%2?.6:1.4):1):1),sum=weights.reduce((a,b)=>a+b,0);let x=0;weights.forEach(weight=>{boxes.push(rect(x,y,weight/sum,height));x+=weight/sum;});remaining-=count;y+=height;}}
  else if(l==='strips'||l==='thirds'){const weights=Array.from({length:n},(_,i)=>l==='strips'?(i%2?1:2):(i%3===0?2:1)),sum=weights.reduce((a,b)=>a+b,0);let x=0;weights.forEach(weight=>{boxes.push(rect(x,0,weight/sum,1));x+=weight/sum;});}
  else if(l==='diagonal'){for(let i=0;i<n;i++){const a=i/n,b=(i+1)/n,tilt=.16;boxes.push({x:m,y:m,w:W,h:H,shape:'polygon',points:[[Math.max(0,a-tilt),0],[i===n-1?1:b-tilt,0],[Math.min(1,b+tilt),1],[i===0?0:a+tilt,1]],inset:g/2});}}
- else {let cols=l==='rows'?1:l==='columns'?n:l==='balanced'?Math.ceil(Math.sqrt(n)):l==='grid-wide'?Math.ceil(Math.sqrt(n*2)):l==='grid-tall'?Math.max(1,Math.floor(Math.sqrt(n/2))):Math.ceil(Math.sqrt(n*W/H));cols=Math.max(1,Math.min(n,cols));grid(n,0,0,1,1,cols);}
+ else {let cols=l==='rows'?1:l==='columns'?n:l==='balanced'?Math.ceil(Math.sqrt(n)):l==='grid-wide'?Math.ceil(Math.sqrt(n*2)):l==='grid-tall'?Math.max(1,Math.floor(Math.sqrt(n/2))):Math.ceil(n/Math.ceil(Math.sqrt(n)));cols=Math.max(1,Math.min(n,cols));grid(n,0,0,1,1,cols);}
  if(['circle','heart','hexagon','diamond','slant'].includes(l))boxes.forEach(b=>b.shape=l);
  return boxes;
 }
